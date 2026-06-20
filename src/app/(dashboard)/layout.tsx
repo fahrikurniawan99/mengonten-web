@@ -1,0 +1,148 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { useToast } from "@/lib/toast-context";
+import logoIcon from "@/assets/images/logo.png";
+
+const navItems = [
+  {
+    label: "Edit Video",
+    href: "/workspace",
+    icon: (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+      </svg>
+    ),
+    external: true,
+  },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Transaksi",
+    href: "/transactions",
+    icon: (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Riwayat Langganan",
+    href: "/subscription-history",
+    icon: (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+];
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const { showToast } = useToast();
+
+  const handleLogout = () => {
+    logout();
+    showToast("Berhasil logout", "success");
+    router.push("/");
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#0a0a0a] text-white">
+      {/* Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-white/5 bg-[#0a0a0a]">
+        {/* Logo */}
+        <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />
+            <span className="text-lg font-bold tracking-tight">Mengonten</span>
+          </Link>
+        </div>
+
+        {/* Nav items */}
+        <nav className="flex-1 px-3 py-4">
+          <ul className="space-y-1">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              const isExternal = "external" in item && item.external;
+              return (
+                <li key={item.href}>
+                  {isExternal ? (
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/10"
+                    >
+                      {item.icon}
+                      {item.label}
+                      <svg className="ml-auto h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                      </svg>
+                    </Link>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                        isActive
+                          ? "bg-white/10 text-white"
+                          : "text-white/40 hover:bg-white/5 hover:text-white/70"
+                      }`}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* User section */}
+        <div className="border-t border-white/5 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-sm font-bold text-white">
+              {user?.username?.charAt(0).toUpperCase() || "U"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-sm font-medium text-white">{user?.username || "User"}</p>
+              <p className="truncate text-xs text-white/30">{user?.email || ""}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="rounded-lg p-2 text-white/30 transition-colors hover:bg-white/5 hover:text-white/60"
+              title="Logout"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <main className="flex-1 pl-64">
+        <div className="mx-auto max-w-4xl px-6 py-10">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
