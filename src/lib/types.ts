@@ -34,6 +34,7 @@ export interface SubscriptionPlan {
   id: string;
   name: string;
   price: number;
+  final_price: number;
   duration_days: number;
   benefits: string | string[];
   description: string;
@@ -109,4 +110,27 @@ export interface JobStatus {
 
 export interface SubmitYouTubeRequest {
   youtube_url: string;
+}
+
+export interface BankAccount {
+  id: string;
+  bank_name: string;
+  account_name: string;
+  account_number: string;
+  icon?: string;
+  is_active: boolean;
+}
+
+export interface TransactionPreview {
+  id: string;
+  reference_id: string;
+  user_id: string;
+  subscription_plan_id: string;
+  bank_account_id: string;
+  plan?: SubscriptionPlan;
+  bank_account?: BankAccount;
+  unique_code: number;
+  total_amount: number;
+  expires_at: string;
+  created_at: string;
 }

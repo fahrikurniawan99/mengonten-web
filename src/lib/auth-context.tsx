@@ -14,29 +14,54 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function getCachedUser(): UserResponse | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("user");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedUser(user: UserResponse | null) {
+  if (user) {
+    localStorage.setItem("user", JSON.stringify(user));
+  } else {
+    localStorage.removeItem("user");
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserResponse | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(getCachedUser);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
+      setCachedUser(null);
+      setUser(null);
       setIsLoading(false);
       return;
     }
 
     api
-      .get<ApiResponse<{ user: UserResponse }>>("/api/profile")
+      .get<ApiResponse<UserResponse>>("/api/profile")
       .then((res) => {
         if (res.status && res.data) {
-          setUser(res.data.user);
+          setUser(res.data);
+          setCachedUser(res.data);
         } else {
           localStorage.removeItem("token");
+          setCachedUser(null);
+          setUser(null);
         }
       })
       .catch((err) => {
         if (err instanceof ApiError && err.status === 401) {
           localStorage.removeItem("token");
+          setCachedUser(null);
+          setUser(null);
         }
       })
       .finally(() => setIsLoading(false));
@@ -48,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new ApiError(400, res.message);
     }
     localStorage.setItem("token", res.data.token);
+    setCachedUser(res.data.user);
     setUser(res.data.user);
   }, []);
 
@@ -57,11 +83,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new ApiError(400, res.message);
     }
     localStorage.setItem("token", res.data.token);
+    setCachedUser(res.data.user);
     setUser(res.data.user);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
+    setCachedUser(null);
     setUser(null);
     api.post("/api/auth/logout").catch(() => {});
   }, []);

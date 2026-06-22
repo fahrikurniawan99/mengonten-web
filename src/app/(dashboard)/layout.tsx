@@ -65,29 +65,28 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a] text-white">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-white/5 bg-[#0a0a0a]">
-        {/* Logo */}
-        <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-6">
+      <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white">
+        <div className="flex h-16 items-center gap-2.5 border-b border-slate-100 px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />
-            <span className="text-lg font-bold tracking-tight">Mengonten</span>
+            <span className="text-lg font-bold tracking-tight text-slate-900">Mengonten</span>
           </Link>
         </div>
 
-        {/* Nav items */}
         <nav className="flex-1 px-3 py-4">
           <ul className="space-y-1">
-            {navItems.map((item) => {
+            {navItems.map((item, idx) => {
               const isActive = pathname === item.href;
               const isExternal = "external" in item && item.external;
+              const prevIsExternal = idx > 0 && "external" in navItems[idx - 1] && navItems[idx - 1].external;
               return (
-                <li key={item.href}>
+                <li key={item.href} className={isExternal ? "mb-4" : prevIsExternal ? "" : ""}>
                   {isExternal ? (
                     <Link
                       href={item.href}
-                      className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-sm font-medium text-red-400 transition-all duration-200 hover:border-red-500/30 hover:bg-red-500/10"
+                      className="flex items-center gap-3 rounded-xl bg-red-600 px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-red-700"
                     >
                       {item.icon}
                       {item.label}
@@ -100,8 +99,8 @@ export default function DashboardLayout({
                       href={item.href}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                         isActive
-                          ? "bg-white/10 text-white"
-                          : "text-white/40 hover:bg-white/5 hover:text-white/70"
+                          ? "bg-slate-100 text-slate-900"
+                          : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                       }`}
                     >
                       {item.icon}
@@ -114,19 +113,18 @@ export default function DashboardLayout({
           </ul>
         </nav>
 
-        {/* User section */}
-        <div className="border-t border-white/5 p-4">
+        <div className="border-t border-slate-100 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-sm font-bold text-white">
               {user?.username?.charAt(0).toUpperCase() || "U"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium text-white">{user?.username || "User"}</p>
-              <p className="truncate text-xs text-white/30">{user?.email || ""}</p>
+              <p className="truncate text-sm font-medium text-slate-900">{user?.username || "User"}</p>
+              <p className="truncate text-xs text-slate-400">{user?.email || ""}</p>
             </div>
             <button
               onClick={handleLogout}
-              className="rounded-lg p-2 text-white/30 transition-colors hover:bg-white/5 hover:text-white/60"
+              className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
               title="Logout"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -137,7 +135,6 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 pl-64">
         <div className="mx-auto max-w-4xl px-6 py-10">
           {children}

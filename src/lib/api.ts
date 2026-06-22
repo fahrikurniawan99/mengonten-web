@@ -24,7 +24,10 @@ async function request<T>(
   const token = getToken();
 
   const headers = new Headers(options.headers);
-  headers.set("Content-Type", "application/json");
+
+  if (!(options.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
 
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
@@ -52,6 +55,18 @@ export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, data?: unknown) =>
     request<T>(path, { method: "POST", body: data ? JSON.stringify(data) : undefined }),
+  postMultipart: <T>(path: string, formData: FormData) => {
+    const token = getToken();
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    return request<T>(path, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+  },
   put: <T>(path: string, data?: unknown) =>
     request<T>(path, { method: "PUT", body: data ? JSON.stringify(data) : undefined }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),

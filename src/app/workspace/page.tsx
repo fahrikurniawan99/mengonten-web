@@ -7,10 +7,10 @@ import { useToast } from "@/lib/toast-context";
 import type { ApiResponse, YouTubeVideo, SubmitYouTubeRequest } from "@/lib/types";
 
 const statusConfig: Record<string, { label: string; color: string; dot: string }> = {
-  pending: { label: "Menunggu", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", dot: "bg-yellow-500" },
-  processing: { label: "Memproses", color: "bg-blue-500/10 text-blue-400 border-blue-500/20", dot: "bg-blue-500 animate-pulse" },
-  completed: { label: "Selesai", color: "bg-green-500/10 text-green-400 border-green-500/20", dot: "bg-green-500" },
-  failed: { label: "Gagal", color: "bg-red-500/10 text-red-400 border-red-500/20", dot: "bg-red-500" },
+  pending: { label: "Menunggu", color: "bg-amber-50 text-amber-600 border-amber-200", dot: "bg-amber-500" },
+  processing: { label: "Memproses", color: "bg-blue-50 text-blue-600 border-blue-200", dot: "bg-blue-500 animate-pulse" },
+  completed: { label: "Selesai", color: "bg-green-50 text-green-600 border-green-200", dot: "bg-green-500" },
+  failed: { label: "Gagal", color: "bg-red-50 text-red-500 border-red-200", dot: "bg-red-500" },
 };
 
 export default function WorkspacePage() {
@@ -68,9 +68,9 @@ export default function WorkspacePage() {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-        <h2 className="mb-1 text-lg font-semibold text-white">Submit Video YouTube</h2>
-        <p className="mb-5 text-sm text-white/40">Tempel URL video YouTube untuk auto-clip</p>
+      <div className="rounded-2xl border border-slate-200 bg-white p-6">
+        <h2 className="mb-1 text-lg font-semibold text-slate-900">Submit Video YouTube</h2>
+        <p className="mb-5 text-sm text-slate-500">Tempel URL video YouTube untuk auto-clip</p>
 
         <form onSubmit={handleSubmit} className="flex gap-3">
           <input
@@ -79,7 +79,7 @@ export default function WorkspacePage() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://www.youtube.com/watch?v=..."
-            className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 backdrop-blur-sm transition-all duration-300 focus:border-red-500/50 focus:bg-white/8 focus:outline-none focus:ring-2 focus:ring-red-500/10"
+            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 backdrop-blur-sm transition-all duration-300 focus:border-red-500/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/10"
           />
           <button
             type="submit"
@@ -100,27 +100,27 @@ export default function WorkspacePage() {
 
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Video Saya</h2>
-          <span className="text-sm text-white/30">{videos.length} video</span>
+          <h2 className="text-lg font-semibold text-slate-900">Video Saya</h2>
+          <span className="text-sm text-slate-400">{videos.length} video</span>
         </div>
 
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
-                <div className="mb-3 aspect-video animate-pulse rounded-xl bg-white/5" />
-                <div className="mb-2 h-4 w-3/4 animate-pulse rounded bg-white/5" />
-                <div className="h-3 w-1/2 animate-pulse rounded bg-white/5" />
+              <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4">
+                <div className="mb-3 aspect-video animate-pulse rounded-xl bg-slate-100" />
+                <div className="mb-2 h-4 w-3/4 animate-pulse rounded bg-slate-100" />
+                <div className="h-3 w-1/2 animate-pulse rounded bg-slate-100" />
               </div>
             ))}
           </div>
         ) : videos.length === 0 ? (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] py-16 text-center">
-            <svg className="mx-auto h-12 w-12 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+          <div className="rounded-2xl border border-slate-200 bg-white py-16 text-center">
+            <svg className="mx-auto h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
             </svg>
-            <p className="mt-4 text-sm text-white/30">Belum ada video. Submit URL YouTube untuk memulai.</p>
+            <p className="mt-4 text-sm text-slate-400">Belum ada video. Submit URL YouTube untuk memulai.</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -130,16 +130,16 @@ export default function WorkspacePage() {
                 <Link
                   key={video.id}
                   href={`/workspace/video/${video.id}`}
-                  className="group rounded-2xl border border-white/5 bg-white/[0.02] p-4 transition-all duration-200 hover:border-white/10 hover:bg-white/[0.04]"
+                  className="group rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50"
                 >
-                  <div className="mb-3 aspect-video overflow-hidden rounded-xl bg-white/5">
+                  <div className="mb-3 aspect-video overflow-hidden rounded-xl bg-slate-100">
                     <div className="flex h-full items-center justify-center bg-gradient-to-br from-red-500/10 to-red-700/10">
                       <svg className="h-10 w-10 text-red-500/30" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z" />
                       </svg>
                     </div>
                   </div>
-                  <h3 className="mb-1.5 truncate text-sm font-semibold text-white group-hover:text-red-400">
+                  <h3 className="mb-1.5 truncate text-sm font-semibold text-slate-900 group-hover:text-red-400">
                     {video.title || "Video Tanpa Judul"}
                   </h3>
                   <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function WorkspacePage() {
                       {st.label}
                     </span>
                     {video.segments && video.segments.length > 0 && (
-                      <span className="text-xs text-white/30">{video.segments.length} klip</span>
+                      <span className="text-xs text-slate-400">{video.segments.length} klip</span>
                     )}
                   </div>
                 </Link>

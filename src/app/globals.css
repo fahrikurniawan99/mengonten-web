@@ -200,15 +200,15 @@ body {
 }
 
 .auth-input {
-  @apply w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white placeholder-white/30 backdrop-blur-sm transition-all duration-300;
+  @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 transition-all duration-300;
 }
 
 .auth-input:focus {
-  @apply border-red-500/50 bg-white/8 outline-none ring-2 ring-red-500/10;
+  @apply border-red-500 bg-white outline-none ring-2 ring-red-500/10;
 }
 
 .auth-label {
-  @apply mb-2 block text-xs font-medium tracking-wider uppercase text-white/50;
+  @apply mb-2 block text-xs font-medium tracking-wider uppercase text-slate-500;
 }
 
 @keyframes toastSlideIn {
@@ -235,4 +235,9 @@ body {
 
 .toast-enter {
   animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
 }

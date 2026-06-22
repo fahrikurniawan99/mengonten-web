@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import logoWithText from "@/assets/images/logo_with_text.png";
 import logoIcon from "@/assets/images/logo.png";
 
 export default function AuthLayout({
@@ -9,44 +8,34 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a]">
+    <div className="flex min-h-screen bg-slate-50">
       {/* Left branding panel */}
       <div className="relative hidden w-1/2 overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
-        {/* Animated mesh gradient background */}
         <div className="absolute inset-0">
-          <div className="animate-mesh-1 absolute -left-32 top-1/4 h-[500px] w-[500px] rounded-full bg-red-600/20 blur-[120px]" />
-          <div className="animate-mesh-2 absolute bottom-1/4 left-1/3 h-[400px] w-[400px] rounded-full bg-red-500/15 blur-[100px]" />
-          <div className="animate-mesh-3 absolute right-0 top-0 h-[350px] w-[350px] rounded-full bg-red-700/10 blur-[80px]" />
+          <div className="absolute -left-32 top-1/4 h-[500px] w-[500px] rounded-full bg-red-100 blur-[120px]" />
+          <div className="absolute bottom-1/4 left-1/3 h-[400px] w-[400px] rounded-full bg-red-50 blur-[100px]" />
         </div>
 
-        {/* Noise texture overlay */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")" }} />
+        <div className="absolute inset-0 dot-grid opacity-60" />
 
         <div className="relative z-10">
           <Link href="/" className="group inline-flex items-center gap-3">
-            <Image
-              src={logoIcon}
-              alt="Mengonten"
-              className="h-10 w-auto"
-              priority
-            />
-            <span className="text-xl font-bold tracking-tight text-white">Mengonten</span>
+            <Image src={logoIcon} alt="Mengonten" className="h-10 w-auto" priority />
+            <span className="text-xl font-bold tracking-tight text-slate-900">Mengonten</span>
           </Link>
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <h2 className="animate-fade-in-left text-4xl font-bold leading-tight tracking-tight text-white xl:text-5xl">
+          <h2 className="text-4xl font-bold leading-tight tracking-tight text-slate-900 xl:text-5xl">
             Buat konten
             <br />
-            <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
-              tanpa batas
-            </span>
+            <span className="text-red-500">tanpa batas</span>
           </h2>
-          <p className="animate-fade-in-left animate-delay-100 mt-6 text-lg leading-relaxed text-white/50">
+          <p className="mt-6 text-lg leading-relaxed text-slate-500">
             Platform all-in-one untuk content creator. Download, clip, dan distribusikan video dalam hitungan detik.
           </p>
 
-          <div className="animate-fade-in-left animate-delay-200 mt-10 flex flex-col gap-4">
+          <div className="mt-10 flex flex-col gap-4">
             <FeatureItem
               icon={
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -75,25 +64,17 @@ export default function AuthLayout({
         </div>
 
         <div className="relative z-10">
-          <p className="text-sm text-white/30">
-            &copy; 2026 Mengonten. All rights reserved.
-          </p>
+          <p className="text-sm text-slate-400">&copy; 2026 Mengonten. All rights reserved.</p>
         </div>
       </div>
 
       {/* Right form panel */}
       <div className="flex w-full items-center justify-center px-6 py-12 lg:w-1/2 lg:p-12">
         <div className="w-full max-w-md">
-          {/* Mobile-only logo */}
           <div className="mb-10 text-center lg:hidden">
             <Link href="/" className="inline-flex items-center gap-2.5">
-              <Image
-                src={logoIcon}
-                alt="Mengonten"
-                className="h-10 w-auto"
-                priority
-              />
-              <span className="text-lg font-bold tracking-tight text-white">Mengonten</span>
+              <Image src={logoIcon} alt="Mengonten" className="h-10 w-auto" priority />
+              <span className="text-lg font-bold tracking-tight text-slate-900">Mengonten</span>
             </Link>
           </div>
 
@@ -109,10 +90,10 @@ export default function AuthLayout({
 function FeatureItem({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-3.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-red-400">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-red-500">
         {icon}
       </div>
-      <span className="text-sm text-white/60">{text}</span>
+      <span className="text-sm text-slate-600">{text}</span>
     </div>
   );
 }
