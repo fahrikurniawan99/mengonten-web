@@ -244,7 +244,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
+          <div className="mx-auto flex max-w-5xl gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 pb-4 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0">
             {plans.length === 0
               ? Array.from({ length: 2 }).map((_, i) => <PlanCardSkeleton key={i} />)
               : plans.map((plan) => (
@@ -318,38 +318,41 @@ function PlanCard({ plan, isPopular, user }: { plan: SubscriptionPlan; isPopular
 
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border p-6 transition-all duration-300 ${
+      className={`relative flex min-w-[280px] flex-col rounded-2xl border p-8 transition-all duration-300 snap-start ${
         isPopular
-          ? "border-red-200 bg-white shadow-lg shadow-red-500/5"
-          : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+          ? "border-red-200 bg-gradient-to-b from-red-50/60 to-white shadow-lg shadow-red-500/5"
+          : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-md"
       }`}
     >
-      {isPopular && (
-        <div className="absolute -top-2.5 left-6">
-          <span className="rounded-full bg-red-600 px-3 py-0.5 text-xs font-semibold text-white">
-            Populer
-          </span>
-        </div>
-      )}
-
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-slate-900">{plan.name}</h3>
         {plan.description && <p className="mt-1 text-sm text-slate-500">{plan.description}</p>}
       </div>
 
+      {isPopular && (
+        <div className="mb-4">
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
+            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.811.71 1.45 1.438 1.016L10 15.591l4.095 2.481c.728.434 1.632-.205 1.438-1.016l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" />
+            </svg>
+            Paling Populer
+          </span>
+        </div>
+      )}
+
       <div className="mb-6">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-3xl font-bold tracking-tight text-slate-900">{formatPrice(plan.final_price)}</span>
+          <span className="text-4xl font-bold tracking-tight text-slate-900">{formatPrice(plan.final_price)}</span>
           {plan.duration_days > 0 && (
             <span className="text-sm text-slate-400">/ {plan.duration_days} hari</span>
           )}
         </div>
         {hasDiscount && (
-          <div className="mt-1 flex items-center gap-2">
+          <div className="mt-1.5 flex items-center gap-2">
             <span className="text-sm text-slate-400 line-through">{formatPrice(plan.price)}</span>
             {plan.discount_percent > 0 && (
-              <span className="rounded bg-red-50 px-1.5 py-0.5 text-xs font-medium text-red-600">
-                -{plan.discount_percent}%
+              <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600">
+                Hemat {plan.discount_percent}%
               </span>
             )}
           </div>
@@ -358,10 +361,10 @@ function PlanCard({ plan, isPopular, user }: { plan: SubscriptionPlan; isPopular
 
       {plan.benefits && (
         <div className="mb-8 flex-1">
-          <ul className="space-y-2.5">
+          <ul className="space-y-3">
             {(Array.isArray(plan.benefits) ? plan.benefits : plan.benefits.split(",")).map((benefit, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600">
-                <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <li key={i} className="flex items-start gap-3 text-sm text-slate-600">
+                <svg className="mt-0.5 h-4 w-4 shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
                 {typeof benefit === "string" ? benefit.trim() : String(benefit)}
@@ -375,8 +378,8 @@ function PlanCard({ plan, isPopular, user }: { plan: SubscriptionPlan; isPopular
         href={user ? `/checkout?plan_id=${plan.id}` : "/register"}
         className={`mt-auto inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-200 ${
           isPopular
-            ? "bg-red-600 text-white hover:bg-red-700"
-            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            ? "bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md"
+            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
         }`}
       >
         {user ? "Beli Sekarang" : "Mulai Sekarang"}
@@ -387,7 +390,7 @@ function PlanCard({ plan, isPopular, user }: { plan: SubscriptionPlan; isPopular
 
 function PlanCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6">
+    <div className="min-w-[280px] rounded-2xl border border-slate-200 bg-white p-8 snap-start">
       <div className="mb-4 h-5 w-20 animate-pulse rounded bg-slate-100" />
       <div className="mb-2 h-5 w-32 animate-pulse rounded bg-slate-100" />
       <div className="mb-6 h-9 w-28 animate-pulse rounded bg-slate-100" />
