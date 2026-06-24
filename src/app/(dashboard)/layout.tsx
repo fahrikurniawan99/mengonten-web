@@ -58,7 +58,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { showToast } = useToast();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -66,39 +66,106 @@ export default function DashboardLayout({
     router.push("/");
   };
 
+  const closeMobile = () => setMobileMenuOpen(false);
+
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900">
-      {/* Overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+      {/* Mobile top navbar */}
+      <nav className="fixed top-0 z-50 w-full border-b border-slate-200 bg-white md:hidden">
+        <div className="flex h-14 items-center justify-between px-4">
+          <Link href="/" className="flex items-center gap-2" onClick={closeMobile}>
+            <Image src={logoIcon} alt="Mengonten" className="h-7 w-auto" priority />
+            <span className="text-base font-semibold tracking-tight text-slate-900">Mengonten</span>
+          </Link>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          >
+            {mobileMenuOpen ? (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            )}
+          </button>
+        </div>
 
-      {/* Hamburger — hanya saat sidebar tertutup */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className={`fixed left-4 top-4 z-50 md:hidden ${sidebarOpen ? "hidden" : "flex"} h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-md transition-colors hover:bg-slate-50`}
-      >
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
+        {mobileMenuOpen && (
+          <div className="border-t border-slate-200 bg-white px-4 py-4 shadow-lg">
+            {/* User info */}
+            <div className="mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-sm font-bold text-white">
+                {user?.username?.charAt(0).toUpperCase() || "U"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-slate-900">{user?.username || "User"}</p>
+                <p className="truncate text-xs text-slate-400">{user?.email || ""}</p>
+              </div>
+            </div>
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-300 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`}
-      >
+            {/* Nav items */}
+            <div className="space-y-1">
+              {navItems.map((item, idx) => {
+                const isActive = pathname === item.href;
+                const isExternal = "external" in item && item.external;
+                const prevIsExternal = idx > 0 && "external" in navItems[idx - 1] && navItems[idx - 1].external;
+                return (
+                  <div key={item.href} className={isExternal ? "mb-4" : prevIsExternal ? "mt-4" : ""}>
+                    {isExternal ? (
+                      <Link
+                        href={item.href}
+                        onClick={closeMobile}
+                        className="flex items-center gap-3 rounded-xl bg-red-600 px-3 py-2.5 text-sm font-medium text-white transition-all hover:bg-red-700"
+                      >
+                        {item.icon}
+                        {item.label}
+                        <svg className="ml-auto h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                      </Link>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={closeMobile}
+                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                          isActive
+                            ? "bg-slate-100 text-slate-900"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                        }`}
+                      >
+                        {item.icon}
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Logout */}
+            <button
+              onClick={() => { handleLogout(); closeMobile(); }}
+              className="mt-4 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-500 transition-all hover:bg-slate-50 hover:text-red-600"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+              </svg>
+              Logout
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* Sidebar — desktop only */}
+      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-40 md:flex md:w-64 md:flex-col md:border-r md:border-slate-200 md:bg-white">
         <div className="flex h-16 items-center gap-2.5 border-b border-slate-100 px-6">
-          <Link href="/" className="flex items-center gap-2.5 flex-1">
+          <Link href="/" className="flex items-center gap-2.5">
             <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />
             <span className="text-lg font-bold tracking-tight text-slate-900">Mengonten</span>
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
         </div>
 
         <nav className="flex-1 px-3 py-4">
@@ -112,7 +179,6 @@ export default function DashboardLayout({
                   {isExternal ? (
                     <Link
                       href={item.href}
-                      onClick={() => setSidebarOpen(false)}
                       className="flex items-center gap-3 rounded-xl bg-red-600 px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-red-700"
                     >
                       {item.icon}
@@ -124,7 +190,6 @@ export default function DashboardLayout({
                   ) : (
                     <Link
                       href={item.href}
-                      onClick={() => setSidebarOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                         isActive
                           ? "bg-slate-100 text-slate-900"
@@ -163,8 +228,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <main className="flex-1 pl-0 md:pl-64">
-        <div className="mx-auto max-w-4xl px-4 py-10 pt-20 md:px-6 md:pt-10">
+      <main className="flex-1 pt-14 md:pt-0 md:pl-64">
+        <div className="mx-auto max-w-4xl px-4 py-6 md:px-6 md:py-10">
           {children}
         </div>
       </main>
