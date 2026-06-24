@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { api } from "@/lib/api";
 import type { ApiResponse, SubscriptionPlan, UserResponse } from "@/lib/types";
@@ -21,6 +21,28 @@ export default function Home() {
   const { user } = useAuth();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      setIsPlaying(true);
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const stopVideo = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
+    setIsPlaying(false);
+  };
 
   useEffect(() => {
     api
@@ -161,18 +183,31 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mx-auto mt-20 max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-            <div className="relative aspect-video">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3 text-slate-300">
-                  <svg className="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+          <div className="relative mx-auto mt-20 max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-black group">
+            <video
+              ref={videoRef}
+              src="https://cdn-mengonten.tiroe.io/assets/6804661-uhd_4096_2160_25fps.mp4"
+              className="w-full aspect-video object-cover"
+              loop
+              playsInline
+              onClick={togglePlay}
+            />
+
+            {!isPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity">
+                <button onClick={togglePlay} className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-xl transition-transform hover:scale-110">
+                  <svg className="ml-1 h-8 w-8 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
                   </svg>
-                  <span className="text-sm">Product Demo</span>
-                </div>
+                </button>
               </div>
-            </div>
+            )}
+
+            {isPlaying && (
+              <button onClick={stopVideo} className="absolute bottom-4 right-4 rounded-full bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-700 shadow backdrop-blur-sm transition-colors hover:bg-white">
+                Stop
+              </button>
+            )}
           </div>
         </div>
       </section>
