@@ -79,7 +79,7 @@ export default function WorkspacePage() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://www.youtube.com/watch?v=..."
-            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 backdrop-blur-sm transition-all duration-300 focus:border-red-500/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/10"
+            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-red-500/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/10"
           />
           <button
             type="submit"

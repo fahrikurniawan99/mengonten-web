@@ -25,7 +25,7 @@ export default function CheckoutLayout({
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-xl">
+      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />

@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* ── Navbar ────────────────────────────────────────── */}
-      <nav className="fixed top-0 z-50 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+      <nav className="fixed top-0 z-50 w-full border-b border-slate-200 bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <Image src={logoIcon} alt="Mengonten" className="h-7 w-auto" priority />
@@ -96,7 +96,7 @@ export default function Home() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="border-t border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl md:hidden">
+          <div className="border-t border-slate-200 bg-white px-6 py-4 md:hidden">
             <div className="flex flex-col gap-1">
               <button onClick={() => scrollTo("fitur")} className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
                 Fitur
