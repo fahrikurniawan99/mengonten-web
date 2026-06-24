@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import { useToast } from "@/lib/toast-context";
-import type { ApiResponse, SubscriptionPlan, BankAccount, TransactionPreview, Transaction } from "@/lib/types";
+import type { ApiResponse, SubscriptionPlan, BankAccount, TransactionPreview, Transaction, TransactionConfirmResponse } from "@/lib/types";
 
 function formatPrice(price: number): string {
   return new Intl.NumberFormat("id-ID", {
@@ -171,7 +171,7 @@ function CheckoutContent() {
 
     setIsSubmitting(true);
     try {
-      const confirmRes = await api.post<ApiResponse<Transaction>>("/api/transactions/confirm", {
+      const confirmRes = await api.post<ApiResponse<TransactionConfirmResponse>>("/api/transactions/confirm", {
         reference_id: preview.reference_id,
       });
 
@@ -180,7 +180,7 @@ function CheckoutContent() {
         return;
       }
 
-      const transactionId = confirmRes.data.id;
+      const transactionId = confirmRes.data.transaction.id;
 
       const formData = new FormData();
       formData.append("account_name", accountName);
