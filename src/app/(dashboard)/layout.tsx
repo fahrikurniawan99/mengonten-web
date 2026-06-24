@@ -73,17 +73,13 @@ export default function DashboardLayout({
         <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Hamburger */}
+      {/* Hamburger — hanya saat sidebar tertutup */}
       <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-md border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 md:hidden"
+        onClick={() => setSidebarOpen(true)}
+        className={`fixed left-4 top-4 z-50 md:hidden ${sidebarOpen ? "hidden" : "flex"} h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-md transition-colors hover:bg-slate-50`}
       >
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-          {sidebarOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          )}
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
 
@@ -94,10 +90,15 @@ export default function DashboardLayout({
         } md:translate-x-0`}
       >
         <div className="flex h-16 items-center gap-2.5 border-b border-slate-100 px-6">
-          <Link href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5 flex-1">
             <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />
             <span className="text-lg font-bold tracking-tight text-slate-900">Mengonten</span>
           </Link>
+          <button onClick={() => setSidebarOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <nav className="flex-1 px-3 py-4">
