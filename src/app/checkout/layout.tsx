@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import logoIcon from "@/assets/images/logo.png";
 
@@ -10,7 +12,14 @@ export default function CheckoutLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -22,6 +31,8 @@ export default function CheckoutLayout({
       </div>
     );
   }
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
