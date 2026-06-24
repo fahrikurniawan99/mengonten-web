@@ -48,12 +48,12 @@ export default function ProfilePage() {
 
       {/* Avatar & Name Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6">
-        <div className="flex items-center gap-5">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-red-700 text-2xl font-bold text-white shadow-lg shadow-red-500/5">
+        <div className="flex items-center gap-4 sm:gap-5">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-red-700 text-xl font-bold text-white shadow-lg shadow-red-500/5 sm:h-20 sm:w-20 sm:text-2xl">
             {user.username.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h2 className="text-xl font-semibold text-slate-900">{user.username}</h2>
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">{user.username}</h2>
             <p className="text-sm text-slate-500">{user.email}</p>
             <div className="mt-2 flex items-center gap-2">
               <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusColors[user.account_status] || statusColors.active}`}>
@@ -96,7 +96,7 @@ export default function ProfilePage() {
 
       {/* Detail Info */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h3 className="mb-5 text-sm font-semibold tracking-wider uppercase text-slate-500">Detail Akun</h3>
+        <h3 className="mb-5 text-sm font-semibold text-slate-500">Detail Akun</h3>
         <div className="space-y-4">
           <InfoRow label="Username" value={user.username} />
           <InfoRow label="Email" value={user.email} />
