@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import logoIcon from "@/assets/images/logo.png";
 
@@ -13,13 +13,14 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && user && pathname !== "/register-success") {
       router.push("/profile");
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, pathname]);
 
   if (isLoading) {
     return (
@@ -32,7 +33,7 @@ export default function AuthLayout({
     );
   }
 
-  if (user) return null;
+  if (user && pathname !== "/register-success") return null;
 
   return (
     <div className="flex min-h-screen bg-slate-50">
