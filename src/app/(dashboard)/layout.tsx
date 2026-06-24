@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
 import logoIcon from "@/assets/images/logo.png";
@@ -57,6 +58,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { showToast } = useToast();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -66,8 +68,31 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900">
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Hamburger */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-md border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50 md:hidden"
+      >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          {sidebarOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          )}
+        </svg>
+      </button>
+
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white">
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
         <div className="flex h-16 items-center gap-2.5 border-b border-slate-100 px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />
@@ -86,6 +111,7 @@ export default function DashboardLayout({
                   {isExternal ? (
                     <Link
                       href={item.href}
+                      onClick={() => setSidebarOpen(false)}
                       className="flex items-center gap-3 rounded-xl bg-red-600 px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-red-700"
                     >
                       {item.icon}
@@ -97,6 +123,7 @@ export default function DashboardLayout({
                   ) : (
                     <Link
                       href={item.href}
+                      onClick={() => setSidebarOpen(false)}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                         isActive
                           ? "bg-slate-100 text-slate-900"
@@ -135,8 +162,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <main className="flex-1 pl-64">
-        <div className="mx-auto max-w-4xl px-6 py-10">
+      <main className="flex-1 pl-0 md:pl-64">
+        <div className="mx-auto max-w-4xl px-4 py-10 pt-20 md:px-6 md:pt-10">
           {children}
         </div>
       </main>
