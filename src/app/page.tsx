@@ -128,9 +128,14 @@ export default function Home() {
               </button>
               <div className="my-2 border-t border-slate-100" />
               {user ? (
-                <Link href="/workspace" className="rounded-lg bg-red-600 px-4 py-2.5 text-center text-sm font-semibold text-white">
-                  Edit Video
-                </Link>
+                <>
+                  <Link href="/profile" className="rounded-lg px-4 py-2.5 text-center text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
+                    Profile
+                  </Link>
+                  <Link href="/workspace" className="rounded-lg bg-red-600 px-4 py-2.5 text-center text-sm font-semibold text-white">
+                    Edit Video
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link href="/login" className="rounded-lg px-4 py-2.5 text-center text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">
