@@ -79,12 +79,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = useCallback(async (data: RegisterRequest) => {
     const res = await api.post<ApiResponse<AuthResponse>>("/api/auth/register", data);
-    if (!res.status || !res.data) {
+    if (!res.status) {
       throw new ApiError(400, res.message);
     }
-    localStorage.setItem("token", res.data.token);
-    setCachedUser(res.data.user);
-    setUser(res.data.user);
+    if (res.data) {
+      localStorage.setItem("token", res.data.token);
+      setCachedUser(res.data.user);
+      setUser(res.data.user);
+    }
   }, []);
 
   const logout = useCallback(() => {
