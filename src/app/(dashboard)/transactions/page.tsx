@@ -292,7 +292,6 @@ export default function TransactionsPage() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-bold text-slate-900">{formatPrice(tx.amount)}</p>
-                  <p className="text-xs text-slate-400">{tx.reference_id?.slice(0, 16) || ""}</p>
                 </div>
               </button>
             );
