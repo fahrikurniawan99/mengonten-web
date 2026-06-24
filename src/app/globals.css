@@ -208,7 +208,7 @@ body {
 }
 
 .auth-label {
-  @apply mb-2 block text-xs font-medium tracking-wider uppercase text-slate-500;
+  @apply mb-2 block text-xs font-medium tracking-wider text-slate-500;
 }
 
 @keyframes toastSlideIn {

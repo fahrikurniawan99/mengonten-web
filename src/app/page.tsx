@@ -374,6 +374,7 @@ function PlanCard({ plan, isPopular, user }: { plan: SubscriptionPlan; isPopular
         </div>
       )}
 
+      {plan.final_price > 0 && (
       <Link
         href={user ? `/checkout?plan_id=${plan.id}` : "/register"}
         className={`mt-auto inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-200 ${
@@ -382,8 +383,9 @@ function PlanCard({ plan, isPopular, user }: { plan: SubscriptionPlan; isPopular
             : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
         }`}
       >
-        {user ? "Beli Sekarang" : "Mulai Sekarang"}
+        {user ? "Coba Sekarang" : "Mulai Sekarang"}
       </Link>
+      )}
     </div>
   );
 }
