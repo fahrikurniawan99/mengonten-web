@@ -62,6 +62,26 @@ export interface Transaction {
   updated_at: string;
 }
 
+export interface TransactionConfirmResponse {
+  transaction: Transaction;
+  user_subscription: {
+    id: string;
+    user_id: string;
+    transaction_id: string;
+    plan_name: string;
+    plan_type: string;
+    plan_benefits: string[];
+    plan_price: number;
+    plan_duration: number;
+    storage_used_bytes: number;
+    rules: Record<string, unknown>;
+    status: string;
+    start_date: string;
+    end_date: string;
+    created_at: string;
+  };
+}
+
 export interface SubscriptionHistory {
   id: string;
   user_id: string;
