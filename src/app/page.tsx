@@ -149,7 +149,7 @@ export default function Home() {
       {/* ── Hero ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="absolute -right-40 top-1/4 h-[500px] w-[500px] rounded-full bg-red-500/5 blur-[150px]" />
-        <div className="absolute inset-0 dot-grid" />
+        <div className="absolute inset-0 hero-grid" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-6">
           <div className="mx-auto max-w-3xl text-center">
