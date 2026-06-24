@@ -567,9 +567,6 @@ function CheckoutContent() {
                 </button>
               )}
 
-              {step === "select" && (
-                <p className="text-center text-xs text-slate-400">Transfer harus sesuai nominal di atas</p>
-              )}
             </div>
           </div>
           )}
