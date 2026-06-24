@@ -21,6 +21,8 @@ export default function AuthLayout({
       router.push("/profile");
     }
   }, [user, isLoading, router, pathname]);
+  }, [user, isLoading, router]);
+>>>>>>> origin/staging
 
   if (isLoading) {
     return (
