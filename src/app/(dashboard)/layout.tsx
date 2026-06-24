@@ -162,15 +162,10 @@ export default function DashboardLayout({
       {/* Sidebar — desktop only */}
       <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-40 md:flex md:w-64 md:flex-col md:border-r md:border-slate-200 md:bg-white">
         <div className="flex h-16 items-center gap-2.5 border-b border-slate-100 px-6">
-          <Link href="/" className="flex items-center gap-2.5 flex-1">
+          <Link href="/" className="flex items-center gap-2.5">
             <Image src={logoIcon} alt="Mengonten" className="h-8 w-auto" priority />
             <span className="text-lg font-bold tracking-tight text-slate-900">Mengonten</span>
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
         </div>
 
         <nav className="flex-1 px-3 py-4">
