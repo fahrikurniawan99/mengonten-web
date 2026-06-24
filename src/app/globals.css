@@ -242,6 +242,15 @@ body {
   background-size: 24px 24px;
 }
 
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.07) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 80% 50% at center, black 40%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 50% at center, black 40%, transparent 75%);
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
