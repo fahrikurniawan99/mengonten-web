@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { api } from "@/lib/api";
@@ -33,6 +33,12 @@ function formatDateShort(dateStr: string): string {
   }).format(new Date(dateStr));
 }
 
+function toInputDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toISOString().split("T")[0];
+}
+
 const statusConfig: Record<string, { label: string; color: string; dot: string }> = {
   pending: { label: "Menunggu", color: "bg-yellow-50 text-yellow-600 border-yellow-200", dot: "bg-yellow-500" },
   paid: { label: "Lunas", color: "bg-green-50 text-green-600 border-green-200", dot: "bg-green-500" },
@@ -46,6 +52,21 @@ const proofStatusConfig: Record<string, { label: string; color: string }> = {
   rejected: { label: "Ditolak", color: "text-red-600" },
 };
 
+const statusOptions = [
+  { value: "", label: "Semua Status" },
+  { value: "pending", label: "Menunggu" },
+  { value: "paid", label: "Lunas" },
+  { value: "expired", label: "Kadaluarsa" },
+  { value: "cancelled", label: "Dibatalkan" },
+];
+
+const sortOptions = [
+  { value: "created_at", label: "Tanggal" },
+  { value: "amount", label: "Nominal" },
+  { value: "total_amount", label: "Total" },
+  { value: "status", label: "Status" },
+];
+
 export default function TransactionsPage() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
@@ -55,24 +76,45 @@ export default function TransactionsPage() {
   const [detail, setDetail] = useState<TransactionDetailResponse | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [sortBy, setSortBy] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("desc");
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
+  const fetchTransactions = useCallback(async () => {
     if (!user) return;
-    api
-      .get<ApiResponse<Transaction[]>>("/api/transactions")
-      .then((res) => {
-        if (res.status && res.data) {
-          setTransactions(res.data);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [user]);
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (statusFilter) params.set("status", statusFilter);
+    if (searchQuery) params.set("search", searchQuery);
+    if (startDate) params.set("start_date", startDate);
+    if (endDate) params.set("end_date", endDate);
+    params.set("sort_by", sortBy);
+    params.set("sort_order", sortOrder);
+
+    try {
+      const res = await api.get<ApiResponse<Transaction[]>>(`/api/transactions?${params.toString()}`);
+      if (res.status && res.data) {
+        setTransactions(res.data);
+      }
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, [user, statusFilter, searchQuery, startDate, endDate, sortBy, sortOrder]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   const openDetail = async (id: string) => {
     setSelectedId(id);
@@ -95,11 +137,22 @@ export default function TransactionsPage() {
     setDetail(null);
   };
 
-  const totalSpent = transactions
-    .filter((tx) => tx.status === "paid")
-    .reduce((sum, tx) => sum + tx.amount, 0);
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+  };
 
-  if (authLoading || loading) {
+  const clearFilters = () => {
+    setStatusFilter("");
+    setSearchQuery("");
+    setStartDate("");
+    setEndDate("");
+    setSortBy("created_at");
+    setSortOrder("desc");
+  };
+
+  const hasFilters = statusFilter || searchQuery || startDate || endDate;
+
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <svg className="h-8 w-8 animate-spin text-red-500" fill="none" viewBox="0 0 24 24">
@@ -110,70 +163,136 @@ export default function TransactionsPage() {
     );
   }
 
-  // List view (default)
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Transaksi</h1>
         <p className="mt-1 text-sm text-slate-500">Riwayat transaksi langganan Anda</p>
       </div>
 
-      {/* Stats */}
-      {transactions.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-xs text-slate-400">Total Transaksi</p>
-            <p className="mt-1 text-xl font-bold text-slate-900">{transactions.length}</p>
+      {/* Filter & Sort Bar */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[200px]">
+            <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari referensi..."
+              className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/10"
+            />
           </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-xs text-slate-400">Lunas</p>
-            <p className="mt-1 text-xl font-bold text-green-600">{transactions.filter((tx) => tx.status === "paid").length}</p>
-          </div>
-          <div className="col-span-2 rounded-xl border border-slate-200 bg-white p-4 sm:col-span-1">
-            <p className="text-xs text-slate-400">Total Pembayaran</p>
-            <p className="mt-1 text-xl font-bold text-slate-900">{formatPrice(totalSpent)}</p>
-          </div>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-colors focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/10"
+          >
+            {statusOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-colors focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/10"
+            title="Dari tanggal"
+          />
+
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-colors focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/10"
+            title="Sampai tanggal"
+          />
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-colors focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/10"
+          >
+            {sortOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+
+          <button
+            onClick={toggleSortOrder}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50"
+            title={sortOrder === "desc" ? "Turun" : "Naik"}
+          >
+            <svg className={`h-4 w-4 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+
+          {hasFilters && (
+            <button onClick={clearFilters} className="rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700">
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Loading */}
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <svg className="h-8 w-8 animate-spin text-red-500" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
         </div>
       )}
 
-      {transactions.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white py-16 text-center">
+      {/* Empty */}
+      {!loading && transactions.length === 0 && (
+        <div className="rounded-xl border border-slate-200 bg-white py-16 text-center">
           <svg className="mx-auto h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
           </svg>
-          <p className="mt-4 text-sm text-slate-400">Belum ada transaksi</p>
+          <p className="mt-4 text-sm text-slate-400">{hasFilters ? "Tidak ada transaksi yang cocok" : "Belum ada transaksi"}</p>
+          {hasFilters && (
+            <button onClick={clearFilters} className="mt-3 text-sm font-medium text-red-600 transition-colors hover:text-red-700">
+              Hapus filter
+            </button>
+          )}
         </div>
-      ) : (
-        <div className="space-y-3">
-          {transactions.map((tx) => {
+      )}
+
+      {/* Table rows */}
+      {!loading && transactions.length > 0 && (
+        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          {transactions.map((tx, i) => {
             const st = statusConfig[tx.status] || statusConfig.pending;
             return (
               <button
                 key={tx.id}
                 onClick={() => openDetail(tx.id)}
-                className="w-full rounded-xl border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-300"
+                className={`flex w-full items-center gap-4 px-4 py-3.5 text-left transition-colors hover:bg-slate-50 ${
+                  i < transactions.length - 1 ? "border-b border-slate-100" : ""
+                }`}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2.5">
-                      <h3 className="truncate text-sm font-semibold text-slate-900">
-                        {tx.plan?.name || "Langganan"}
-                      </h3>
-                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${st.color}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />
-                        {st.label}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs text-slate-400">{formatDateShort(tx.created_at)}</p>
-                    {tx.bank_account && (
-                      <p className="mt-1.5 text-xs text-slate-500">
-                        {tx.bank_account.bank_name} — {tx.bank_account.account_name}
-                      </p>
-                    )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2.5">
+                    <span className="truncate text-sm font-medium text-slate-900">
+                      {tx.plan?.name || "Langganan"}
+                    </span>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${st.color}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />
+                      {st.label}
+                    </span>
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-base font-bold text-slate-900">{formatPrice(tx.amount)}</p>
-                  </div>
+                  <p className="mt-0.5 text-xs text-slate-400">{formatDateShort(tx.created_at)}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-bold text-slate-900">{formatPrice(tx.amount)}</p>
+                  <p className="text-xs text-slate-400">{tx.reference_id?.slice(0, 16) || ""}</p>
                 </div>
               </button>
             );
@@ -285,7 +404,7 @@ export default function TransactionsPage() {
                         <p className="mb-3 text-xs text-slate-400">Foto Bukti</p>
                         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                           {detail.payment_proof.photos.map((photo: TransactionPhotoDetail, i: number) => (
-                            <div key={i} className="group relative">
+                            <div key={i}>
                               <img src={photo.photo_url} alt={`Bukti ${i + 1}`} className="aspect-square w-full rounded-xl border border-slate-200 object-cover" />
                               {photo.description && (
                                 <p className="mt-1.5 text-xs text-slate-500">{photo.description}</p>
