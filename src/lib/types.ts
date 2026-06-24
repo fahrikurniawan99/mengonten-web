@@ -154,3 +154,37 @@ export interface TransactionPreview {
   expires_at: string;
   created_at: string;
 }
+
+export interface TransactionPhotoDetail {
+  photo_url: string;
+  description?: string;
+}
+
+export interface PaymentProof {
+  account_name: string;
+  source_bank: string;
+  status: string;
+  photos: TransactionPhotoDetail[];
+}
+
+export interface TransactionDetail {
+  id: string;
+  reference_id: string;
+  status: "pending" | "paid" | "expired" | "cancelled";
+  amount: number;
+  unique_code: number;
+  total_amount: number;
+  bank_name: string;
+  bank_account_number: string;
+  bank_account_name: string;
+  paid_at?: string | null;
+  expired_at: string;
+  created_at: string;
+  updated_at: string;
+  subscription_plan?: { name: string; duration_days: number };
+}
+
+export interface TransactionDetailResponse {
+  transaction: TransactionDetail;
+  payment_proof?: PaymentProof;
+}
